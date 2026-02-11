@@ -18,6 +18,7 @@ const menuItems = [
   { name: 'nav_finance_hub', href: '/dashboard/finance', icon: Landmark },
   { name: 'nav_logs', href: '/dashboard/audit', icon: ShieldAlert },
   { name: 'nav_management', href: '/dashboard/management', icon: ShieldCheck },
+  { name: 'nav_users', href: '/dashboard/users', icon: Users },
   { name: 'nav_terminals', href: '/dashboard/terminals', icon: Monitor },
   { name: 'nav_settings', href: '/dashboard/settings', icon: Settings },
 ];
@@ -59,7 +60,7 @@ export default function Sidebar({ user }) {
 
       <nav className="flex-1 p-4 space-y-1.5 overflow-hidden">
         {menuItems.filter(item => {
-          if (['nav_settings', 'nav_terminals', 'nav_discounts', 'nav_logs', 'nav_management', 'nav_campaigns'].includes(item.name)) {
+          if (['nav_settings', 'nav_terminals', 'nav_discounts', 'nav_logs', 'nav_management', 'nav_campaigns', 'nav_users', 'nav_finance_hub'].includes(item.name)) {
             return user?.role === 'admin' || user?.role === 'superadmin';
           }
           return true;
@@ -102,7 +103,7 @@ export default function Sidebar({ user }) {
             {t('build_status') || 'Build Status'}
           </span>
           <span className="text-[9px] font-bold text-slate-500 bg-white/5 border border-slate-800 px-3 py-1 rounded-full">
-            {t('version_label') || 'VERSION'} 4.0.0 Enterprise
+            {t('version_label') || 'VERSION'} 3.0
           </span>
         </div>
       </div>
