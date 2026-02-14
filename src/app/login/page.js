@@ -32,7 +32,7 @@ export default function LoginPage() {
           toast.info('Please enter your 2FA code');
         } else {
           toast.success('Welcome back!');
-          router.push('/dashboard');
+          window.location.href = '/dashboard';
         }
       } else {
         if (data.errors) {
@@ -63,7 +63,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         toast.success('Verified successfully!');
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       } else {
         toast.error(data.message || 'Invalid code');
       }
