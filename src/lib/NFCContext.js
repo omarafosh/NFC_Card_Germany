@@ -102,9 +102,9 @@ export function NFCProvider({ children }) {
         
         // ... (Existing implementation for Terminal selection & Supabase Realtime)
         // إذا لم يتم تحديد terminal، استخدم الافتراضي (1)
-        let terminalId = localStorage.getItem('selected_terminal');
-        if (!terminalId) {
-            terminalId = '1';
+        const storedTerminalId = localStorage.getItem('selected_terminal');
+        const terminalId = storedTerminalId || '1';
+        if (!storedTerminalId) {
             localStorage.setItem('selected_terminal', terminalId);
         }
         if (!terminalId) return;
