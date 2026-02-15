@@ -24,7 +24,7 @@ jobs:
       with:
         node-version: 18.x
         cache: 'npm'
-        cache-dependency-path: nfc-reader-simple/package-lock.json
+        cache-dependency-path: package-lock.json
 
     - name: Install Dependencies
       working-directory: ./nfc-reader-simple
