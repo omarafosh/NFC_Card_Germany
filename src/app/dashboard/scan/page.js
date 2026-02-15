@@ -1485,8 +1485,7 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                                                 {bundle.name}
                                             </h3>
                                             <div className="flex items-baseline gap-1">
-                                                <span className={`text-xl font-black ${isOwned ? 'text-slate-400' : 'text-white'}`}>{currency}{bundle.price}</span>
-                                                <span className="text-[10px] text-slate-500 line-through">{currency}{(bundle.price * 1.2).toFixed(0)}</span>
+                                                <span className={`text-4xl font-black ${isOwned ? 'text-slate-400' : 'text-blue-400'}`}>{bundle.reward_config?.value}%</span>
                                             </div>
                                         </div>
                                         <div className="mt-3 flex flex-col gap-1.5">
@@ -1495,8 +1494,8 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                                                 <span>{bundle.validity_days} {t('days_label')}</span>
                                             </div>
                                             {bundle.reward_config?.type === 'PERCENTAGE' && (
-                                                <div className={`bg-amber-500/10 text-amber-500 text-[9px] font-black px-2 py-0.5 rounded-lg border border-amber-500/20 w-fit`}>
-                                                    +{bundle.reward_config.value}% ({bundle.bundle_type === 'individual' || bundle.bundle_type === 'meat_individual' ? '4 كوبونات' : 'عائلة'})
+                                                <div className={`bg-amber-500/10 text-amber-500 text-[12px] font-black px-3 py-1 rounded-lg border border-amber-500/20 w-fit`}>
+                                                    {bundle.bundle_type === 'family' || bundle.bundle_type === 'meat_family' ? 'عائلة' : 'أفراد'}
                                                 </div>
                                             )}
                                         </div>

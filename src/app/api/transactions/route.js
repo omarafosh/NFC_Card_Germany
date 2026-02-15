@@ -372,10 +372,16 @@ export async function POST(request) {
                     // Logic: Split bundle discount based on bundle_type or campaign name
                     const totalDiscount = targetCampaign.reward_config?.value || 10;
                     const bundleType = targetCampaign.bundle_type || '';
-                    const campaignName = (targetCampaign.name || '').toLowerCase();
+                    const campaignName = targetCampaign.name || '';
+                    const customSplits = targetCampaign.reward_config?.splits || null;
 
                     // Define fixed split configurations for each bundle type
-                    const getBundleSplitConfig = (type, name, total) => {
+                    const getBundleSplitConfig = (type, name, total, dynSplits) => {
+                        // HIGH PRIORITY: Use dynamic splits from database if defined
+                        if (dynSplits && Array.isArray(dynSplits) && dynSplits.length > 0) {
+                            return { splits: dynSplits, bonusBundle: total, label: name };
+                        }
+
                         // First check explicit bundle_type from database
                         if (type === 'family') {
                             return { splits: [3, 5, 7, 10], bonusBundle: total, label: 'عائلة' };
@@ -384,7 +390,7 @@ export async function POST(request) {
                             return { splits: [2, 2, 4, 4], bonusBundle: total, label: 'لحمة عائلة' };
                         }
                         if (type === 'youth') {
-                            return { splits: [ 6, 6], bonusBundle: total, label: 'أفراد' };
+                            return { splits: [6, 6], bonusBundle: total, label: 'أفراد' };
                         }
                         if (type === 'meat_individual') {
                             return { splits: [2.5, 2.5], bonusBundle: total, label: 'لحمة أفراد' };
@@ -392,19 +398,20 @@ export async function POST(request) {
 
 
                         // Fallback: analyze campaign name for backward compatibility
-                        if (name.includes('عائل') && !name.includes('لحم')) {
+                        const lowerName = (name || '').toLowerCase();
+                        if (lowerName.includes('عائل') && !lowerName.includes('لحم')) {
                             return { splits: [3, 5, 7, 10], bonusBundle: 25, label: 'عائلة' };
                         }
-                        if (name.includes('لحم') && name.includes('عائل')) {
+                        if (lowerName.includes('لحم') && lowerName.includes('عائل')) {
                             return { splits: [2, 2, 3, 3], bonusBundle: 10, label: 'لحمة عائلة' };
                         }
-                        if (name.includes('شباب')) {
+                        if (lowerName.includes('شباب')) {
                             return { splits: [2, 4, 3, 3], bonusBundle: 12, label: 'شباب' };
                         }
-                        if (name.includes('لحم') && (name.includes('افراد') || name.includes('أفراد') || name.includes('فرد'))) {
+                        if (lowerName.includes('لحم') && (lowerName.includes('افراد') || lowerName.includes('أفراد') || lowerName.includes('فرد'))) {
                             return { splits: [2.5, 2.5], bonusBundle: 5, label: 'لحمة أفراد' };
                         }
-                        if (name.includes('افراد') || name.includes('أفراد') || name.includes('فرد')) {
+                        if (lowerName.includes('افراد') || lowerName.includes('أفراد') || lowerName.includes('فرد')) {
                             return { splits: [2, 2, 3, 3], bonusBundle: 10, label: 'أفراد' };
                         }
 
@@ -413,8 +420,9 @@ export async function POST(request) {
                         return { splits: [part, part, part, part], bonusBundle: total, label: 'افتراضي' };
                     };
 
-                    const splitConfig = getBundleSplitConfig(bundleType, campaignName, totalDiscount);
-                    console.log(`[BUNDLE] ${splitConfig.label}: Creating ${splitConfig.splits.length} coupons:`, splitConfig.splits, `+ bonus ${splitConfig.bonusBundle}%`);
+                    const splitConfig = getBundleSplitConfig(bundleType, campaignName, totalDiscount, customSplits);
+                    const { splits, bonusBundle, label } = splitConfig;
+                    console.log(`[BUNDLE] ${label}: Creating ${splits.length} coupons:`, splits, `+ bonus ${bonusBundle}%`);
 
                     let expires_at = null;
                     if (targetCampaign.validity_days) {
@@ -424,7 +432,7 @@ export async function POST(request) {
                     }
 
                     // Create split coupons
-                    const couponsToInsert = splitConfig.splits.map((discountValue, index) => ({
+                    const couponsToInsert = splits.map((discountValue, index) => ({
                         customer_id,
                         campaign_id: targetCampaign.id,
                         code: `PKG-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
@@ -435,7 +443,7 @@ export async function POST(request) {
                             part: index + 1,
                             discount_value: discountValue,
                             original_total: totalDiscount,
-                            bundle_type: splitConfig.label
+                            bundle_type: label
                         },
                         expires_at
                     }));
@@ -450,9 +458,9 @@ export async function POST(request) {
                             source: 'BUNDLE_BONUS',
                             transaction_id,
                             part: 'BONUS',
-                            discount_value: splitConfig.bonusBundle,
+                            discount_value: bonusBundle,
                             original_total: totalDiscount,
-                            bundle_type: splitConfig.label
+                            bundle_type: label
                         },
                         expires_at
                     });
@@ -471,16 +479,16 @@ export async function POST(request) {
                                 metadata: {
                                     ...transaction.metadata,
                                     campaign_name: targetCampaign.name,
-                                    coupon_count: splitConfig.splits.length + 1, // splits + bonus
-                                    bundle_info: `${splitConfig.label}: ${splitConfig.splits.join('% + ')}% + ${splitConfig.bonusBundle}% بونص`
+                                    coupon_count: splits.length + 1, // splits + bonus
+                                    bundle_info: `${label}: ${splits.join('% + ')}% + ${bonusBundle}% بونص`
                                 }
                             })
                             .eq('id', transaction_id);
 
                         new_rewards.push({
-                            name: `${targetCampaign.name} (${splitConfig.splits.length} كوبونات + باقة ${splitConfig.bonusBundle}%)`,
+                            name: `${targetCampaign.name} (${splits.length} كوبونات + باقة ${bonusBundle}%)`,
                             type: 'BUNDLE',
-                            parts: [...splitConfig.splits, splitConfig.bonusBundle]
+                            parts: [...splits, bonusBundle]
                         });
                     }
                 }

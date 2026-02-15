@@ -30,7 +30,8 @@ export default function CampaignsPage() {
         price: '',
         usage_limit: 10,
         customer_type: '', // '' = All, 'single', 'family'
-        bundle_type: '' // '', 'family', 'meat_family', 'youth', 'meat_individual', 'individual'
+        bundle_type: '', // '', 'family', 'meat_family', 'youth', 'meat_individual', 'individual'
+        custom_splits: '' // Comma separated string for bundle splits
     });
 
     const [showDeleted, setShowDeleted] = useState(false);
@@ -82,7 +83,8 @@ export default function CampaignsPage() {
             price: camp.price || 0,
             usage_limit: camp.usage_limit || 1,
             customer_type: camp.customer_type || '',
-            bundle_type: camp.bundle_type || ''
+            bundle_type: camp.bundle_type || '',
+            custom_splits: camp.reward_config?.splits?.join(', ') || ''
         });
         setIsModalOpen(true);
     };
@@ -104,6 +106,9 @@ export default function CampaignsPage() {
             reward_config: {
                 type: formData.reward_type,
                 value: parseFloat(formData.reward_value),
+                splits: formData.custom_splits
+                    ? formData.custom_splits.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n))
+                    : null
             },
             // New Top-Level Fields
             validity_days: parseInt(formData.validity_days),
@@ -131,7 +136,8 @@ export default function CampaignsPage() {
                     name: '', description: '', type: 'BUNDLE',
                     trigger_min_spend: '', trigger_count: '',
                     reward_type: 'PERCENTAGE', reward_value: '', validity_days: 30,
-                    price: '', usage_limit: 10, customer_type: '', bundle_type: ''
+                    price: '', usage_limit: 10, customer_type: '', bundle_type: '',
+                    custom_splits: ''
                 });
             } else {
                 const err = await res.json();
@@ -421,6 +427,24 @@ export default function CampaignsPage() {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* CUSTOM SPLITS CONFIG */}
+                            {formData.type === 'BUNDLE' && (
+                                <div className="text-start">
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5">{t('custom_splits') || 'توزيع الحصص (مفصولة بفاصلة)'}</label>
+                                    <input
+                                        className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g. 6, 6"
+                                        value={formData.custom_splits}
+                                        onChange={e => setFormData({ ...formData, custom_splits: e.target.value })}
+                                    />
+                                    <p className="text-[10px] text-gray-500 mt-1">
+                                        {language === 'ar'
+                                            ? 'مثال: 6, 6 (سيقوم بإنشاء طابعين بقيمة 6% لكل منهما قبل البونص)'
+                                            : 'Example: 6, 6 (will create two 6% stamps before the bonus)'}
+                                    </p>
+                                </div>
+                            )}
 
 
                             {/* REWARD VALUE (What does each unit give?) */}
