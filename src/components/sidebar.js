@@ -103,7 +103,7 @@ export default function Sidebar({ user }) {
             {t('build_status') || 'Build Status'}
           </span>
           <span className="text-[9px] font-bold text-slate-500 bg-white/5 border border-slate-800 px-3 py-1 rounded-full">
-            {t('version_label') || 'VERSION'} 3.0
+            {t('version_label') || 'VERSION'} 0.1
           </span>
         </div>
       </div>
