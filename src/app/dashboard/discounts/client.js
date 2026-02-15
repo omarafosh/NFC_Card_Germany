@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Tag, Percent, DollarSign, Gift, Calendar, Trash2, TicketPercent, Edit, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -22,7 +22,7 @@ export default function DiscountsClient() {
         is_active: true
     });
 
-    const fetchDiscounts = async () => {
+    const fetchDiscounts = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`/api/discounts?deleted=${showDeleted}`);
@@ -33,11 +33,11 @@ export default function DiscountsClient() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
 
     useEffect(() => {
         fetchDiscounts();
-    }, [showDeleted]);
+    }, [fetchDiscounts]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

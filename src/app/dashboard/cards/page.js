@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, CreditCard, Link as LinkIcon, AlertCircle, Edit, Trash2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -32,9 +32,9 @@ export default function CardsPage() {
         setMounted(true);
         fetchData();
         fetchSettings();
-    }, [showDeleted]);
+    }, [fetchData, fetchSettings]);
 
-    const fetchSettings = async () => {
+    const fetchSettings = useCallback(async () => {
         try {
             const res = await fetch('/api/settings');
             const data = await res.json();
@@ -45,9 +45,9 @@ export default function CardsPage() {
         } catch (e) {
             console.error('Failed to load settings', e);
         }
-    };
+    }, []);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [cardsRes, customersRes] = await Promise.all([
@@ -64,7 +64,7 @@ export default function CardsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
 
     // Helper to determine card status
     const getCardStatus = (card) => {

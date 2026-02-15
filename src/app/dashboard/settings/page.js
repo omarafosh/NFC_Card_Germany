@@ -40,7 +40,7 @@ export default function SettingsPage() {
             toast.error(t('error_loading'));
             setLoading(false);
         });
-    }, []);
+    }, [t]);
 
     const handleChange = (e) => {
         setSettings({ ...settings, [e.target.name]: e.target.value });

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CreditCard, Loader2, User, CheckCircle2, XCircle, Settings, Save, Delete, UserPlus, Zap, Receipt, Wallet, ArrowUpCircle, Gift, Percent, Store, Trash2, Lock } from 'lucide-react';
@@ -77,8 +77,6 @@ export default function ScanPage() {
             .then(data => {
                 const settings = data.data || { currency_symbol: '€' };
                 setPageSettings(settings);
-                // Optionally set global toast options if needed, 
-                // but since we use sonner, we can pass duration to individual calls or use a helper.
             })
             .catch(err => console.error('Failed to load settings', err));
 
@@ -86,7 +84,7 @@ export default function ScanPage() {
             .then(res => res.json())
             .then(data => setBranches(data.data || []))
             .catch(err => console.error('Failed to load branches', err));
-    }, []);
+    }, [t, router]);
 
     const [terminalActivity, setTerminalActivity] = useState({});
 
@@ -114,7 +112,7 @@ export default function ScanPage() {
             console.log('[ScanPage] Unsubscribing from NFC scans');
             unsubscribe();
         };
-    }, [subscribeToScan]);
+    }, [subscribeToScan, processScan]);
 
     // Load Terminals when Branch changes
     useEffect(() => {
@@ -347,7 +345,7 @@ export default function ScanPage() {
             channel.unsubscribe();
             supabase.removeChannel(channel);
         };
-    }, [selectedTerminal, retryKey]);
+    }, [selectedTerminal, retryKey, isElectron, scanResult, resetScan, processScan, t]);
 
     // Polling Fallback (Backup for WebSocket)
     useEffect(() => {
@@ -423,7 +421,7 @@ export default function ScanPage() {
         }, 5000); // Poll every 5 seconds
 
         return () => clearInterval(pollInterval);
-    }, [selectedTerminal, status]);
+    }, [selectedTerminal, status, isElectron, scanResult, t, playSound, resetScan, processScan]);
 
     // Keyboard Shortcuts (Enter to confirm, Escape to cancel)
     useEffect(() => {
@@ -444,7 +442,7 @@ export default function ScanPage() {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [scanResult, loading, status]);
+    }, [scanResult, loading, status, resetScan]);
 
     const handleTerminalSelect = (terminalId) => {
         const terminal = terminals.find(t => t.id.toString() === terminalId);
@@ -457,7 +455,7 @@ export default function ScanPage() {
         }
     };
 
-    const playSound = (type) => {
+    const playSound = useCallback((type) => {
         try {
             if (!audioContextRef.current) {
                 audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -499,7 +497,7 @@ export default function ScanPage() {
         } catch (e) {
             console.error('Audio play failed', e);
         }
-    };
+    }, []);
 
     const handleConnectHwReader = async () => {
         // 1. Check for Secure Context (HTTPS)
@@ -550,7 +548,7 @@ export default function ScanPage() {
         };
     }, []);
 
-    const processScan = async (uid) => {
+    const processScan = useCallback(async (uid) => {
         console.log(`[processScan] START for UID: ${uid}`);
 
         // Prevent concurrent processing
@@ -622,7 +620,7 @@ export default function ScanPage() {
             console.log('[processScan] FINISHED. Status reset to connected.');
             setStatus('connected');
         }
-    };
+    }, [router, t, playSound]);
 
     const handleReset = async (type) => {
         const msg = type === 'BALANCE' ? t('confirm_reset_balance') :
@@ -654,13 +652,13 @@ export default function ScanPage() {
     };
 
 
-    const resetScan = () => {
+    const resetScan = useCallback(() => {
         setScanResult(null);
         setShowDangerZone(false);
         processingRef.current = false;
-    };
+    }, []);
 
-    const refreshData = async () => {
+    const refreshData = useCallback(async () => {
         if (scanResult?.card?.uid) {
             processingRef.current = true;
             try {
@@ -684,7 +682,7 @@ export default function ScanPage() {
                 processingRef.current = false;
             }
         }
-    };
+    }, [scanResult]);
 
     const handleManualScan = async () => {
         const uid = manualUid.trim().toUpperCase();

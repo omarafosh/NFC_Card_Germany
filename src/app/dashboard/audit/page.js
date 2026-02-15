@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { format } from 'date-fns';
 import { Loader2, ShieldAlert, Search, Filter, Trash2, Key, X, Info } from 'lucide-react';
@@ -16,11 +16,7 @@ export default function AuditPage() {
     const [confirmPwd, setConfirmPwd] = useState('');
     const [clearing, setClearing] = useState(false);
 
-    useEffect(() => {
-        fetchLogs();
-    }, [filter]);
-
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`/api/audit?filter=${filter}&limit=100`);
@@ -35,7 +31,11 @@ export default function AuditPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter, t]);
+
+    useEffect(() => {
+        fetchLogs();
+    }, [fetchLogs]);
 
     const handleClearLogs = async (e) => {
         e.preventDefault();

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useSettings } from '@/lib/SettingsContext';
 import {
@@ -36,11 +36,7 @@ export default function CampaignsPage() {
 
     const [showDeleted, setShowDeleted] = useState(false);
 
-    useEffect(() => {
-        fetchCampaigns();
-    }, [showDeleted]); // Refetch when mode changes
-
-    const fetchCampaigns = async () => {
+    const fetchCampaigns = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`/api/campaigns?deleted=${showDeleted}`);
@@ -51,7 +47,11 @@ export default function CampaignsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, [fetchCampaigns]);
 
     const handleRestore = async (id) => {
         try {

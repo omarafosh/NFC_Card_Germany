@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Edit, Users, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -16,7 +16,7 @@ export default function UserManagementPage() {
     const [currentUser, setCurrentUser] = useState(null);
     const [formData, setFormData] = useState({ id: null, username: '', password: '', role: 'staff', branch_id: '' });
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [uRes, bRes, meRes] = await Promise.all([
@@ -35,11 +35,11 @@ export default function UserManagementPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
 
     useEffect(() => {
         fetchData();
-    }, [showDeleted]);
+    }, [fetchData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

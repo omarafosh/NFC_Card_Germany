@@ -16,7 +16,10 @@ export default function TransactionsChart({ data }) {
 
     useEffect(() => {
         // Ensure the component is mounted on the client
-        setMounted(true);
+        const timeout = setTimeout(() => {
+            setMounted(true);
+        }, 0);
+        return () => clearTimeout(timeout);
     }, []);
 
     // Placeholder until mounted or if no data

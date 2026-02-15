@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -20,9 +20,21 @@ export default function TerminalsPage() {
     const { t, language, dir } = useLanguage();
     const [terminals, setTerminals] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({ online: 0, total: 0, hardwareIssues: 0 });
+    const calculateStats = useCallback((data) => {
+        const now = new Date();
+        const onlineCount = data.filter(t => {
+            const lastSync = t.last_sync ? new Date(t.last_sync) : null;
+            return t.is_active && lastSync && (now - lastSync) < 15000 && !t.metadata?.is_shutdown;
+        }).length;
 
-    const fetchTerminals = async () => {
+        const hwIssues = data.filter(t =>
+            t.connection_url && t.connection_url.toLowerCase().includes('no hardware')
+        ).length;
+
+        setStats({ online: onlineCount, total: data.length, hardwareIssues: hwIssues });
+    }, []);
+
+    const fetchTerminals = useCallback(async () => {
         const { data, error } = await supabase
             .from('terminals')
             .select(`
@@ -36,24 +48,16 @@ export default function TerminalsPage() {
             calculateStats(data);
         }
         setLoading(false);
-    };
-
-    const calculateStats = (data) => {
-        const now = new Date();
-        const onlineCount = data.filter(t => {
-            const lastSync = t.last_sync ? new Date(t.last_sync) : null;
-            return t.is_active && lastSync && (now - lastSync) < 15000 && !t.metadata?.is_shutdown;
-        }).length;
-
-        const hwIssues = data.filter(t =>
-            t.connection_url && t.connection_url.toLowerCase().includes('no hardware')
-        ).length;
-
-        setStats({ online: onlineCount, total: data.length, hardwareIssues: hwIssues });
-    };
+    }, [calculateStats]);
 
     useEffect(() => {
-        fetchTerminals();
+        let isSubscribed = true;
+
+        const loadData = async () => {
+            await fetchTerminals();
+        };
+
+        loadData();
 
         // Subscribe to REALTIME changes in the terminals table
         const channel = supabase
@@ -63,6 +67,7 @@ export default function TerminalsPage() {
                     presence: { key: 'terminals' }
                 }
             })
+            // ... (rest of the channel setup remains the same, but let's be careful with the lines)
             .on(
                 'postgres_changes',
                 {
@@ -126,7 +131,7 @@ export default function TerminalsPage() {
             supabase.removeChannel(channel);
             clearInterval(interval);
         };
-    }, []);
+    }, [fetchTerminals, calculateStats]);
 
     if (loading) {
         return (

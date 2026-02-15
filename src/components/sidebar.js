@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSettings } from '@/lib/SettingsContext';
 import { LayoutDashboard, Users, CreditCard, Tag, Settings, History, Scan, ShieldAlert, ShieldCheck, Megaphone, Monitor, Store, Landmark } from 'lucide-react';
@@ -46,7 +47,14 @@ export default function Sidebar({ user }) {
       <div className={`p-6 border-b border-slate-800 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
         <div className="flex items-center gap-3 mb-1">
           {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-contain" />
+            <div className="relative w-8 h-8 rounded-lg overflow-hidden">
+              <Image
+                src={logoUrl}
+                alt="Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
           ) : (
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <Store size={18} className="text-white" />

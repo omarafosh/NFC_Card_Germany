@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, Building2, Zap, Trash2, Edit, Key, Monitor, Users, MapPin, RefreshCw, Eye, EyeOff, ShieldCheck, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -13,7 +13,10 @@ export default function ManagementPage() {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        const timeout = setTimeout(() => {
+            setMounted(true);
+        }, 0);
+        return () => clearTimeout(timeout);
     }, []);
 
     if (!mounted) return null;
@@ -81,7 +84,7 @@ function BranchManagement() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [formData, setFormData] = useState({ id: null, name: '', location: '', is_active: true });
 
-    const fetchBranches = async () => {
+    const fetchBranches = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`/api/branches?deleted=${showDeleted}`);
@@ -92,11 +95,11 @@ function BranchManagement() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
 
     useEffect(() => {
         fetchBranches();
-    }, [showDeleted]);
+    }, [fetchBranches]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -311,7 +314,7 @@ function TerminalManagement() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [formData, setFormData] = useState({ id: null, branch_id: '', name: '', connection_url: 'cloud-sync', is_active: true });
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [tRes, bRes] = await Promise.all([
@@ -327,7 +330,7 @@ function TerminalManagement() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showDeleted, t]);
 
     useEffect(() => {
         fetchData();
@@ -358,7 +361,7 @@ function TerminalManagement() {
             supabase.removeChannel(channel);
             clearInterval(interval);
         };
-    }, [showDeleted]);
+    }, [fetchData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -730,18 +730,28 @@ export const translations = {
         last_7_days: 'Last 7 Days',
         growth_performance_note_positive: 'Performance is {percent}% better than last week',
         growth_performance_note_negative: 'Performance is {percent}% lower than last week',
+
+        // Security & Injection
+        security_status: 'Security Status',
+        secured: 'Secured (Signed)',
+        unsecured: 'Unsecured',
+        injection_success_title: 'Injection Successful',
+        injection_success_msg: 'Card protected and digitally signed successfully.',
+        injection_failed_title: 'Injection Failed',
+        verify_before_add: 'Security verification required before adding',
+        card_must_be_secured: 'Unsigned cards cannot be added to the system.',
+        secure_card_first: 'Please secure the card first from "Card Security" page',
+        card_verified_badge: 'Verified & Secure Card',
+        card_unverified_badge: 'Unverified Card',
     }
 };
 
 export function LanguageProvider({ children }) {
-    const [language, setLanguage] = useState('ar');
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        const savedLang = localStorage.getItem('app_lang') || 'ar';
-        setLanguage(savedLang);
-        setMounted(true);
-    }, []);
+    const [language, setLanguage] = useState(() => {
+        if (typeof window === 'undefined') return 'ar';
+        return localStorage.getItem('app_lang') || 'ar';
+    });
+    const [mounted, setMounted] = useState(true);
 
     useEffect(() => {
         if (mounted) {

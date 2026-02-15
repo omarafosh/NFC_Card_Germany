@@ -47,7 +47,7 @@ export default function SearchableSelect({
         } else if (!value && !isOpen) {
             setSearch('');
         }
-    }, [value, isOpen, selectedOption]);
+    }, [value, isOpen, selectedOption, displayValue]);
 
     const filteredOptions = options.filter(opt =>
         displayValue(opt).toLowerCase().includes(search.toLowerCase()) ||

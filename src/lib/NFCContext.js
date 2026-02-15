@@ -93,7 +93,7 @@ export function NFCProvider({ children }) {
         return () => {
             if (hwReader) hwReader.disconnect();
         };
-    }, []);
+    }, [hwReader]);
 
     // Existing Cloud Logic (unchanged but shortened for context)
     useEffect(() => {

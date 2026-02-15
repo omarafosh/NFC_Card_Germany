@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Trash2, Edit, CreditCard, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -52,7 +52,7 @@ function CustomersContent() {
         }
     }, [uidFromUrl, mounted]);
 
-    const fetchCustomers = async () => {
+    const fetchCustomers = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`/api/customers?search=${encodeURIComponent(search)}&deleted=${showDeleted}`);
@@ -63,12 +63,12 @@ function CustomersContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [search, showDeleted, t]);
 
     useEffect(() => {
         const timeout = setTimeout(fetchCustomers, 300);
         return () => clearTimeout(timeout);
-    }, [search, showDeleted]);
+    }, [fetchCustomers]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -148,8 +148,8 @@ function CustomersContent() {
             accessor: 'type',
             cell: (row) => (
                 <span className={`px-2 py-1 rounded-lg text-xs font-bold ${row.type === 'family'
-                        ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
-                        : 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-300'
+                    ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
+                    : 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-300'
                     }`}>
                     {row.type === 'family' ? t('type_family_short') : t('type_single_short')}
                 </span>

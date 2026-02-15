@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
 import { User, Phone, Mail, CreditCard, History, Edit2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,7 +14,7 @@ export default function CustomerDetailsPage({ params }) {
     const [editingPoints, setEditingPoints] = useState(false);
     const [newPoints, setNewPoints] = useState(0);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             // Fetch Customer
@@ -33,11 +33,11 @@ export default function CustomerDetailsPage({ params }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchData();
-    }, [id]);
+    }, [fetchData]);
 
     const handleUpdatePoints = async () => {
         try {

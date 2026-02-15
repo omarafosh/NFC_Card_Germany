@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { Loader2, ShieldCheck, Copy, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -162,7 +163,13 @@ export default function TwoFactorSetup() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">1. Scan this QR code with your authenticator app</p>
                     {qrData && (
                         <div className="flex justify-center p-6 bg-white rounded-2xl shadow-inner border mx-auto w-fit">
-                            <img src={qrData} alt="2FA QR Code" className="w-40 h-40" />
+                            <Image
+                                src={qrData}
+                                alt="2FA QR Code"
+                                width={160}
+                                height={160}
+                                className="w-40 h-40"
+                            />
                         </div>
                     )}
                 </div>
