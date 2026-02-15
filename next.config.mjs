@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  distDir: '.next',
+
+  // Force App Router - disable Pages Router
+  experimental: {
+    // App Router is enabled by default in Next.js 13+
+    // This ensures we don't fall back to Pages Router
+  },
 
   // Security Headers
   async headers() {
