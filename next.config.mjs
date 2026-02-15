@@ -2,7 +2,10 @@
 const nextConfig = {
   /* config options here */
   distDir: '.next',
-
+  
+  // Explicitly use App Router only
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  
   experimental: {
     // Optimize package imports for better tree-shaking
     optimizePackageImports: ['lucide-react', '@supabase/supabase-js'],
