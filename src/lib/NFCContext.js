@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { supabase } from './supabase';
-import { NfcReader } from '@/lib/hardware/NfcReader';
 
 const NFCContext = createContext(null);
 
@@ -24,6 +23,9 @@ export function NFCProvider({ children }) {
         }
 
         try {
+            // Dynamically import NfcReader to avoid initialization issues
+            const { NfcReader } = await import('@/lib/hardware/NfcReader');
+
             // Disconnect existing if any
             if (hwReader) await hwReader.disconnect();
 

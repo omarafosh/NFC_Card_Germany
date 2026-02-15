@@ -59,17 +59,18 @@ export default function EnrollCardPage() {
     const fetchCustomers = async (search = '') => {
         setLoadingCustomers(true);
         try {
-            let query = supabase
+            // Build query without let reassignment to avoid TDZ issues
+            const queryBuilder = supabase
                 .from('customers')
                 .select('id, full_name, phone, student_id')
                 .is('deleted_at', null)
                 .limit(20);
 
-            if (search) {
-                query = query.ilike('full_name', `%${search}%`);
-            }
+            const finalQuery = search
+                ? queryBuilder.ilike('full_name', `%${search}%`)
+                : queryBuilder;
 
-            const { data, error } = await query;
+            const { data, error } = await finalQuery;
             if (error) throw error;
             setCustomers(data || []);
         } catch (error) {

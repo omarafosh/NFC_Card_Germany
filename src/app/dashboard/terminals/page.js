@@ -20,6 +20,7 @@ export default function TerminalsPage() {
     const { t, language, dir } = useLanguage();
     const [terminals, setTerminals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [terminalStats, setTerminalStats] = useState({ online: 0, total: 0, hardwareIssues: 0 });
     const calculateStats = useCallback((data) => {
         const now = new Date();
         const onlineCount = data.filter(t => {
@@ -31,7 +32,8 @@ export default function TerminalsPage() {
             t.connection_url && t.connection_url.toLowerCase().includes('no hardware')
         ).length;
 
-        setStats({ online: onlineCount, total: data.length, hardwareIssues: hwIssues });
+        console.log('[calculateStats] Updating terminalStats:', { online: onlineCount, total: data.length, hardwareIssues: hwIssues });
+        setTerminalStats({ online: onlineCount, total: data.length, hardwareIssues: hwIssues });
     }, []);
 
     const fetchTerminals = useCallback(async () => {
@@ -166,7 +168,7 @@ export default function TerminalsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-gray-400 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">{t('total_terminals')}</p>
-                            <h3 className="text-3xl font-black text-gray-900 dark:text-white mt-1">{stats.total}</h3>
+                            <h3 className="text-3xl font-black text-gray-900 dark:text-white mt-1">{terminalStats.total}</h3>
                         </div>
                         <div className="bg-blue-50 dark:bg-blue-500/10 p-3 rounded-xl">
                             <Monitor className="text-blue-600 dark:text-blue-500" />
@@ -178,7 +180,7 @@ export default function TerminalsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-gray-400 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">{t('currently_online')}</p>
-                            <h3 className="text-3xl font-black text-green-600 dark:text-green-500 mt-1">{stats.online}</h3>
+                            <h3 className="text-3xl font-black text-green-600 dark:text-green-500 mt-1">{terminalStats.online}</h3>
                         </div>
                         <div className="bg-green-50 dark:bg-green-500/10 p-3 rounded-xl">
                             <Wifi className="text-green-600 dark:text-green-500 animate-pulse" />
@@ -190,7 +192,7 @@ export default function TerminalsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-gray-400 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">{t('hardware_alerts')}</p>
-                            <h3 className="text-3xl font-black text-orange-600 dark:text-orange-500 mt-1">{stats.hardwareIssues}</h3>
+                            <h3 className="text-3xl font-black text-orange-600 dark:text-orange-500 mt-1">{terminalStats.hardwareIssues}</h3>
                         </div>
                         <div className="bg-orange-50 dark:bg-orange-500/10 p-3 rounded-xl">
                             <Cpu className="text-orange-600 dark:text-orange-500" />

@@ -3,10 +3,13 @@ const nextConfig = {
   /* config options here */
   distDir: '.next',
 
-  // Force App Router - disable Pages Router
   experimental: {
-    // App Router is enabled by default in Next.js 13+
-    // This ensures we don't fall back to Pages Router
+    // Optimize package imports for better tree-shaking
+    optimizePackageImports: ['lucide-react', '@supabase/supabase-js'],
+    // Server Actions
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
 
   // Security Headers

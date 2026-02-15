@@ -41,6 +41,146 @@ export default function ScanPage() {
     const { isConnected, onScan: subscribeToScan, injectCard } = useNFC(); // Added this line
     const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 
+    const playSound = useCallback((type) => {
+        try {
+            if (!audioContextRef.current) {
+                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = audioContextRef.current;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            if (type === 'success') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 0.3);
+            } else if (type === 'error') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(150, ctx.currentTime);
+                oscillator.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 0.3);
+            } else if (type === 'recharge') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                oscillator.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 0.05);
+                oscillator.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.1);
+                oscillator.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 0.5);
+            }
+        } catch (e) {
+            console.error('Audio play failed', e);
+        }
+    }, []);
+
+    const processScan = useCallback(async (uid) => {
+        console.log(`[processScan] START for UID: ${uid}`);
+
+        if (processingRef.current) {
+            console.warn('[processScan] ABORT: Already busy.');
+            return;
+        }
+
+        processingRef.current = true;
+        setStatus('processing');
+        setScanResult(null);
+        toast.dismiss();
+        toast.info(t('processing'));
+
+        try {
+            console.log(`[processScan] Fetching /api/scan for ${uid}...`);
+            const res = await fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid }),
+            });
+
+            console.log(`[processScan] API Response Status: ${res.status}`);
+
+            if (res.status === 401) {
+                toast.error(t('session_expired') || 'Session expired');
+                router.push('/login');
+                return;
+            }
+
+            const data = await res.json();
+            console.log('[processScan] API Data received:', data);
+
+            if (data.status === 'unsupported_card') {
+                console.warn('[processScan] API rejected unsigned card:', uid);
+                toast.error(t('card_unsupported') || 'This card is not supported');
+                playSound('error');
+                setFlashEffect('error');
+                setTimeout(() => setFlashEffect(null), 1000);
+            } else {
+                setScanResult(data);
+                if (data.status === 'success') {
+                    toast.success(`${t('connected')}: ${data.customer.full_name}`);
+                    playSound('success');
+                    setFlashEffect('success');
+                } else {
+                    playSound('error');
+                    setFlashEffect('error');
+                }
+            }
+
+            setTimeout(() => setFlashEffect(null), 1000);
+        } catch (err) {
+            console.error('[processScan] FATAL ERROR:', err);
+            toast.error(t('network_error'));
+            playSound('error');
+            setFlashEffect('error');
+            setTimeout(() => setFlashEffect(null), 1000);
+            processingRef.current = false;
+        } finally {
+            console.log('[processScan] FINISHED. Status reset to connected.');
+            setStatus('connected');
+        }
+    }, [router, t, playSound]);
+
+    const resetScan = useCallback(() => {
+        setScanResult(null);
+        setShowDangerZone(false);
+        processingRef.current = false;
+    }, []);
+
+    const refreshData = useCallback(async () => {
+        if (scanResult?.card?.uid) {
+            processingRef.current = true;
+            try {
+                const res = await fetch('/api/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: scanResult.card.uid,
+                        refresh: true,
+                        _t: Date.now()
+                    }),
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    setScanResult(data);
+                }
+            } catch (err) {
+                console.error("[refreshData] Error:", err);
+            } finally {
+                processingRef.current = false;
+            }
+        }
+    }, [scanResult]);
+
     useEffect(() => {
         // Reset lock on mount
         console.log('[ScanPage] Mounted. Resetting processingRef.');
@@ -455,49 +595,7 @@ export default function ScanPage() {
         }
     };
 
-    const playSound = useCallback((type) => {
-        try {
-            if (!audioContextRef.current) {
-                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            const ctx = audioContextRef.current;
-            const oscillator = ctx.createOscillator();
-            const gainNode = ctx.createGain();
 
-            oscillator.connect(gainNode);
-            gainNode.connect(ctx.destination);
-
-            if (type === 'success') {
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(800, ctx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                oscillator.start();
-                oscillator.stop(ctx.currentTime + 0.3);
-            } else if (type === 'error') {
-                oscillator.type = 'sawtooth';
-                oscillator.frequency.setValueAtTime(150, ctx.currentTime);
-                oscillator.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.2);
-                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                oscillator.start();
-                oscillator.stop(ctx.currentTime + 0.3);
-            } else if (type === 'recharge') {
-                oscillator.type = 'triangle';
-                oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-                oscillator.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 0.05);
-                oscillator.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.1);
-                oscillator.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.15);
-                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                oscillator.start();
-                oscillator.stop(ctx.currentTime + 0.5);
-            }
-        } catch (e) {
-            console.error('Audio play failed', e);
-        }
-    }, []);
 
     const handleConnectHwReader = async () => {
         // 1. Check for Secure Context (HTTPS)
@@ -548,79 +646,7 @@ export default function ScanPage() {
         };
     }, []);
 
-    const processScan = useCallback(async (uid) => {
-        console.log(`[processScan] START for UID: ${uid}`);
 
-        // Prevent concurrent processing
-        if (processingRef.current) {
-            console.warn('[processScan] ABORT: Already busy.');
-            return;
-        }
-
-        processingRef.current = true;
-        setStatus('processing');
-        setScanResult(null);
-        toast.dismiss();
-        toast.info(t('processing'));
-
-        try {
-            console.log(`[processScan] Fetching /api/scan for ${uid}...`);
-            const res = await fetch('/api/scan', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid }),
-            });
-
-            console.log(`[processScan] API Response Status: ${res.status}`);
-
-            if (res.status === 401) {
-                toast.error(t('session_expired') || 'Session expired');
-                router.push('/login');
-                return;
-            }
-
-            const data = await res.json();
-            console.log('[processScan] API Data received:', data);
-
-            // ✅ Handle all response statuses
-            if (data.status === 'unsupported_card') {
-                // API rejected unsigned card - show error only
-                console.warn('[processScan] API rejected unsigned card:', uid);
-                toast.error(t('card_unsupported') || 'This card is not supported');
-                playSound('error');
-                setFlashEffect('error');
-                setTimeout(() => setFlashEffect(null), 1000);
-                // Don't set scanResult for unsupported cards
-            } else {
-                // All other statuses (success, unknown_card, expired, etc) show result modal
-                setScanResult(data);
-
-                if (data.status === 'success') {
-                    toast.success(`${t('connected')}: ${data.customer.full_name}`);
-                    playSound('success');
-                    setFlashEffect('success');
-                } else {
-                    playSound('error');
-                    setFlashEffect('error');
-                }
-            }
-
-            // Auto-clear flash
-            setTimeout(() => setFlashEffect(null), 1000);
-        } catch (err) {
-            console.error('[processScan] FATAL ERROR:', err);
-            toast.error(t('network_error'));
-            playSound('error');
-            setFlashEffect('error');
-            setTimeout(() => setFlashEffect(null), 1000);
-
-            // Release lock on error since no result modal is shown
-            processingRef.current = false;
-        } finally {
-            console.log('[processScan] FINISHED. Status reset to connected.');
-            setStatus('connected');
-        }
-    }, [router, t, playSound]);
 
     const handleReset = async (type) => {
         const msg = type === 'BALANCE' ? t('confirm_reset_balance') :
@@ -652,37 +678,7 @@ export default function ScanPage() {
     };
 
 
-    const resetScan = useCallback(() => {
-        setScanResult(null);
-        setShowDangerZone(false);
-        processingRef.current = false;
-    }, []);
 
-    const refreshData = useCallback(async () => {
-        if (scanResult?.card?.uid) {
-            processingRef.current = true;
-            try {
-                const res = await fetch('/api/scan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        uid: scanResult.card.uid,
-                        refresh: true,
-                        _t: Date.now() // Cache busting
-                    }),
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    console.log("[refreshData] Success. Coupons count:", data.coupons?.length);
-                    setScanResult(data);
-                }
-            } catch (err) {
-                console.error("[refreshData] Error:", err);
-            } finally {
-                processingRef.current = false;
-            }
-        }
-    }, [scanResult]);
 
     const handleManualScan = async () => {
         const uid = manualUid.trim().toUpperCase();
