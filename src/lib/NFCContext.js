@@ -97,10 +97,13 @@ export function NFCProvider({ children }) {
 
     // Existing Cloud Logic (unchanged but shortened for context)
     useEffect(() => {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+        
         // ... (Existing implementation for Terminal selection & Supabase Realtime)
         // إذا لم يتم تحديد terminal، استخدم الافتراضي (1)
-        let terminalId = typeof window !== 'undefined' ? localStorage.getItem('selected_terminal') : null;
-        if (!terminalId && typeof window !== 'undefined') {
+        let terminalId = localStorage.getItem('selected_terminal');
+        if (!terminalId) {
             terminalId = '1';
             localStorage.setItem('selected_terminal', terminalId);
         }
