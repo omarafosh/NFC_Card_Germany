@@ -361,19 +361,19 @@ export async function POST(request) {
                     const getBundleSplitConfig = (type, name, total) => {
                         // First check explicit bundle_type from database
                         if (type === 'family') {
-                            return { splits: [3, 5, 7, 10], bonusBundle: 25, label: 'عائلة' };
+                            return { splits: [3, 5, 7, 10], bonusBundle: total, label: 'عائلة' };
                         }
                         if (type === 'meat_family') {
-                            return { splits: [2, 2, 3, 3], bonusBundle: 10, label: 'لحمة عائلة' };
+                            return { splits: [2, 2, 3, 3], bonusBundle: total, label: 'لحمة عائلة' };
                         }
                         if (type === 'youth') {
-                            return { splits: [2, 4, 3, 3], bonusBundle: 12, label: 'شباب' };
+                            return { splits: [2, 4, 3, 3], bonusBundle: total, label: 'شباب' };
                         }
                         if (type === 'meat_individual') {
-                            return { splits: [2.5, 2.5], bonusBundle: 5, label: 'لحمة أفراد' };
+                            return { splits: [2.5, 2.5], bonusBundle: total, label: 'لحمة أفراد' };
                         }
                         if (type === 'individual') {
-                            return { splits: [2, 2, 3, 3], bonusBundle: 10, label: 'أفراد' };
+                            return { splits: [2, 2, 3, 3], bonusBundle: total, label: 'أفراد' };
                         }
 
                         // Fallback: analyze campaign name for backward compatibility

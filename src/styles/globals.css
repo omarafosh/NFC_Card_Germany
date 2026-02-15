@@ -8,21 +8,42 @@
 }
 
 /* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
+.custom-scrollbar::-webkit-scrollbar,
+.custom-scrollbar-y::-webkit-scrollbar,
+.custom-scrollbar-x::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track,
+.custom-scrollbar-y::-webkit-scrollbar-track,
+.custom-scrollbar-x::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #334155;
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.custom-scrollbar-y::-webkit-scrollbar-thumb,
+.custom-scrollbar-x::-webkit-scrollbar-thumb {
+    background: #475569;
     border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar-y::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar-x::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+    background-clip: content-box;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 /* Glassmorphism Utilities */

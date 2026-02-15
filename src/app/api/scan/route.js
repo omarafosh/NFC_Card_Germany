@@ -124,6 +124,7 @@ export async function POST(request) {
                 .from('campaigns')
                 .select('*')
                 .eq('is_active', true)
+                .is('deleted_at', null)
                 .order('created_at', { ascending: false }),
 
             // 4. Recent Transactions
@@ -154,7 +155,8 @@ export async function POST(request) {
                 .from('campaigns')
                 .select('*')
                 .eq('type', 'MANUAL')
-                .eq('is_active', true),
+                .eq('is_active', true)
+                .is('deleted_at', null),
 
             // 8. Bundle Campaigns
             supabaseAdmin
@@ -162,6 +164,7 @@ export async function POST(request) {
                 .select('*')
                 .eq('type', 'BUNDLE')
                 .eq('is_active', true)
+                .is('deleted_at', null)
         ]);
 
         // Filter discounts logic (Steps 3 continued)

@@ -210,6 +210,14 @@ export const translations = {
         date: 'التاريخ',
         customer_points: 'عدد الباقات',
 
+        // Bundle Types
+        bundle_type_family: 'باقات العائلة',
+        bundle_type_meat_family: 'باقات اللحوم العائلية',
+        bundle_type_youth: 'باقات الشباب',
+        bundle_type_meat_individual: 'باقات اللحوم الفردية',
+        bundle_type_individual: 'باقات الأفراد',
+        bundle_type_default: 'باقات متنوعة',
+
         // Cards Page
         link_card: 'توصيل بطاقة جديدة',
         expires_at: 'تاريخ الانتهاء',
@@ -566,6 +574,14 @@ export const translations = {
         amount: 'Amount',
         date: 'Date',
         customer_points: 'Package Count',
+
+        // Bundle Types
+        bundle_type_family: 'Family Bundles',
+        bundle_type_meat_family: 'Meat Family Bundles',
+        bundle_type_youth: 'Youth Bundles',
+        bundle_type_meat_individual: 'Meat Individual Bundles',
+        bundle_type_individual: 'Individual Bundles',
+        bundle_type_default: 'Other Bundles',
 
         // Cards Page
         link_card: 'Link New Card',

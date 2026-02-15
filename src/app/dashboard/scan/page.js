@@ -900,7 +900,7 @@ export default function ScanPage() {
                 {scanResult && (
                     <div className="h-full flex flex-col items-center justify-center min-h-0 p-4">
                         {scanResult.status === 'success' ? (
-                            <div className="w-full max-w-5xl h-auto max-h-[65vh] bg-gradient-to-br from-white to-gray-50 dark:from-black/90 dark:to-slate-900/95 backdrop-blur-sm rounded-3xl border border-gray-200 dark:border-slate-600/50 overflow-hidden flex flex-col shadow-2xl transition-all">
+                            <div className="w-full max-w-5xl h-auto max-h-[85vh] bg-gradient-to-br from-white to-gray-50 dark:from-black/90 dark:to-slate-900/95 backdrop-blur-sm rounded-3xl border border-gray-200 dark:border-slate-600/50 overflow-hidden flex flex-col shadow-2xl transition-all">
 
                                 {/* Compact Header */}
                                 <div className="p-4 border-b border-gray-200 dark:border-slate-600/50 flex items-center justify-between bg-gray-50/50 dark:bg-black/40 backdrop-blur-sm flex-shrink-0">
@@ -985,7 +985,7 @@ export default function ScanPage() {
                                 </div>
 
                                 {/* Content - Scrollable if needed */}
-                                <div className="flex-1 p-5 overflow-y-auto min-h-0">
+                                <div className="flex-1 p-5 overflow-y-auto min-h-0 bg-transparent">
                                     <CheckoutForm
                                         customer={scanResult.customer}
                                         card={scanResult.card}
@@ -1500,39 +1500,39 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
 
 
             {/* --- MAIN WALLET VIEW --- */}
-            <div className="flex-1 overflow-y-auto">
-                {/* Header Actions */}
-                <div className="flex justify-between items-end mb-8 gap-4 h-20">
+            <div className="flex-1 overflow-y-auto custom-scrollbar-y">
+                {/* Header Actions - Raised & Taller Info Box */}
+                <div className="flex justify-between items-stretch mb-6 gap-4 h-28 bg-white/5 dark:bg-slate-900/40 p-4 rounded-3xl border border-slate-200 dark:border-slate-700/50 shadow-xl backdrop-blur-sm">
                     {/* Left Actions */}
-                    <div className="flex items-end gap-4 h-full">
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={() => setShowStore(true)}
-                            className="h-14 bg-[#c5e14d] hover:bg-[#b5d13d] text-slate-900 px-6 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-[#c5e14d]/20 transition-all active:scale-95"
+                            className="h-full bg-gradient-to-br from-[#c5e14d] to-[#b5d13d] text-slate-900 px-6 rounded-2xl font-black text-sm flex flex-col items-center justify-center gap-1 shadow-lg shadow-[#c5e14d]/20 transition-all active:scale-95 group"
                         >
-                            <UserPlus size={20} />
-                            {t('topup_btn')}
+                            <UserPlus size={24} className="group-hover:scale-110 transition-transform" />
+                            <span>{t('topup_btn')}</span>
                         </button>
 
                         <div className="h-10 w-px bg-slate-200/5 mt-auto mb-1 mx-1" />
 
-                        <div className="flex items-end gap-4 h-full">
+                        <div className="flex items-center gap-3">
                             {/* PREVIEW MODE vs NORMAL MODE */}
                             {!selectedCouponGroup ? (
-                                <>
+                                <div className="flex items-center gap-3">
                                     <button
                                         onClick={handlePayFromWallet}
                                         disabled={loading || !amount}
                                         data-type="wallet-pay"
-                                        className="h-14 bg-[#75c4b1] hover:bg-[#65b4a1] text-white px-6 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-[#75c4b1]/20 transition-all active:scale-95 disabled:opacity-50"
+                                        className="h-20 bg-gradient-to-br from-[#75c4b1] to-[#65b4a1] text-white px-6 rounded-2xl font-black text-sm flex flex-col items-center justify-center gap-1 shadow-lg shadow-[#75c4b1]/20 transition-all active:scale-95 disabled:opacity-50 group"
                                     >
-                                        <ArrowUpCircle size={18} />
-                                        {t('pay_with_wallet')}
+                                        <ArrowUpCircle size={24} className="group-hover:scale-110 transition-transform" />
+                                        <span>{t('pay_with_wallet')}</span>
                                     </button>
 
-                                    <div className="bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/50 rounded-2xl px-4 h-14 flex flex-col justify-center min-w-[150px] items-center relative group focus-within:ring-2 focus-within:ring-blue-500/40 transition-all">
-                                        <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-0.5 leading-none">{t('bill_amount')}</span>
+                                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 h-20 flex flex-col justify-center min-w-[140px] items-center shadow-inner group focus-within:ring-2 focus-within:ring-blue-500/40 transition-all">
+                                        <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 leading-none">{t('bill_amount')}</span>
                                         <div className="flex items-baseline justify-center gap-1 w-full">
-                                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase pt-1">{currency}</span>
+                                            <span className="text-xs font-black text-slate-400 dark:text-slate-600 uppercase">{currency}</span>
                                             <input
                                                 type="number"
                                                 placeholder="0.00"
@@ -1542,7 +1542,7 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                                             />
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             ) : (
                                 /* TRANSACTION PREVIEW MODE */
                                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-5">
@@ -1560,43 +1560,44 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                                     <button
                                         onClick={handleConfirmPackageUse}
                                         disabled={loading}
-                                        className="h-14 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white pl-6 pr-8 rounded-2xl font-black text-lg flex items-center gap-3 shadow-xl shadow-purple-600/30 transition-all active:scale-95 ring-2 ring-purple-500/50 ring-offset-2 ring-offset-slate-900"
+                                        className="h-20 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white pl-6 pr-8 rounded-2xl font-black text-lg flex items-center gap-3 shadow-xl shadow-purple-600/30 transition-all active:scale-95 ring-2 ring-purple-500/50 ring-offset-2 ring-offset-slate-900 group"
                                     >
                                         <div className="flex flex-col items-start leading-none">
-                                            <span className="text-[9px] text-purple-200 font-bold uppercase tracking-wider">{t('confirm_payment') || 'CONFIRM'}</span>
-                                            <span>{currency}{finalTotal.toFixed(2)}</span>
+                                            <span className="text-[10px] text-purple-200 font-bold uppercase tracking-wider">{t('confirm_payment') || 'CONFIRM'}</span>
+                                            <span className="text-2xl">{currency}{finalTotal.toFixed(2)}</span>
                                         </div>
-                                        <CheckCircle2 size={24} className="ml-2" />
+                                        <CheckCircle2 size={32} className="ml-2 group-hover:scale-110 transition-transform" />
                                     </button>
 
                                     {/* Cancel Selection */}
                                     <button
                                         onClick={() => setSelectedCouponGroup(null)}
-                                        className="h-14 w-14 rounded-2xl bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all"
+                                        className="h-20 w-16 rounded-2xl bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500/50 text-slate-400 hover:text-red-500 flex flex-col items-center justify-center transition-all group"
                                     >
-                                        <XCircle size={24} />
+                                        <XCircle size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                                        <span className="text-[9px] font-black uppercase mt-1">GHOST</span>
                                     </button>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Right Balances - Also Matching Height for symmetry */}
-                    <div className="flex items-end gap-3 h-full">
+                    {/* Right Balances - Matching Height for symmetry */}
+                    <div className="flex items-center gap-3">
                         {/* Credits Badge */}
-                        <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl px-6 h-14 flex flex-col justify-center min-w-[110px] items-center">
-                            <span className="text-[9px] font-black text-purple-500/60 uppercase tracking-[0.2em] mb-0.5">{t('credit_unit')}</span>
-                            <span className="text-xl font-black text-purple-500 font-mono">
+                        <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl px-5 h-20 flex flex-col justify-center min-w-[100px] items-center shadow-sm">
+                            <span className="text-[10px] font-black text-purple-500/60 uppercase tracking-widest mb-1">{t('credit_unit')}</span>
+                            <span className="text-3xl font-black text-purple-500 font-mono leading-none">
                                 {walletItems.length}
                             </span>
                         </div>
 
                         {/* Money Balance Badge */}
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-8 h-14 flex flex-col justify-center min-w-[160px] items-center">
-                            <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em] mb-0.5">{t('customer_wallet')}</span>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-[10px] font-black text-emerald-500/50 uppercase">{currency}</span>
-                                <span className="text-2xl font-black text-emerald-500 font-mono tracking-tighter">
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-6 h-20 flex flex-col justify-center min-w-[150px] items-center shadow-sm">
+                            <span className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">{t('customer_wallet')}</span>
+                            <div className="flex items-baseline gap-1 leading-none">
+                                <span className="text-xs font-black text-emerald-500/50 uppercase">{currency}</span>
+                                <span className="text-3xl font-black text-emerald-500 font-mono tracking-tighter">
                                     {parseFloat(customer?.balance || 0).toLocaleString()}
                                 </span>
                             </div>
@@ -1604,9 +1605,9 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                     </div>
                 </div>
 
-                {/* Content */}
+                {/* Content - Grouped by Type */}
                 {walletItems.length === 0 ? (
-                    <div className="h-48 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700/50 rounded-3xl bg-slate-50 dark:bg-slate-800/10 px-6 text-center">
+                    <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700/50 rounded-3xl bg-slate-50 dark:bg-slate-800/10 px-6 text-center">
                         <div className="w-16 h-16 bg-white dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
                             <Wallet size={32} className="text-slate-400 dark:text-slate-600" />
                         </div>
@@ -1615,75 +1616,105 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                         </h3>
                     </div>
                 ) : (
-                    <div className="mt-auto">
-                        <div className="flex items-center justify-between mb-3 px-1">
-                            <div className="flex items-center gap-2">
-                                <Wallet size={16} className="text-purple-500" />
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-tight">{t('active_packages')}</span>
-                            </div>
-                            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-200/5 mx-4" />
-                        </div>
-                        <div className="bg-slate-100 dark:bg-slate-900/40 border-2 border-dashed border-slate-200 dark:border-slate-700/50 rounded-3xl p-6 min-h-[160px]">
-                            <div className="flex flex-wrap gap-4">
-                                {walletItems.map(coupon => {
-                                    const reward = coupon.campaigns?.reward_config || {};
-                                    const isSelected = selectedCouponGroup?.id === coupon.id;
-                                    // Use individual discount if available (split bundle), otherwise use campaign reward
-                                    const displayDiscount = coupon.individualDiscount !== null ? coupon.individualDiscount : reward.value;
-                                    const partLabel = coupon.part ? `${coupon.part}/4` : '';
+                    <div className="space-y-8 pb-8">
+                        {Object.entries(
+                            walletItems.reduce((acc, item) => {
+                                const type = item.metadata?.bundle_type || 'default';
+                                if (!acc[type]) acc[type] = [];
+                                acc[type].push(item);
+                                return acc;
+                            }, {})
+                        ).map(([type, items]) => {
+                            // Consistent sorting: Bonus/Total cards first (will appear on the far right in RTL)
+                            const sortedItems = [...items].sort((a, b) => {
+                                const checkBonus = (item) => {
+                                    const name = (item.campaigns?.name || '').toLowerCase();
+                                    const part = String(item.part || '').toLowerCase();
+                                    return part === 'bonus' || part === 'total' || part === '0' || !item.part || name.includes('bonus') || name.includes('بونص');
+                                };
+                                const aIsBonus = checkBonus(a);
+                                const bIsBonus = checkBonus(b);
+                                if (aIsBonus && !bIsBonus) return -1;
+                                if (!aIsBonus && bIsBonus) return 1;
 
-                                    // Check if this is a meat bundle (لحمة)
-                                    const campaignName = (coupon.campaigns?.name || '').toLowerCase();
-                                    const bundleType = coupon.metadata?.bundle_type || '';
-                                    const isMeatBundle = bundleType.includes('meat') || campaignName.includes('لحم');
+                                // For non-bonus items, sort by part numeric value ascending
+                                const aPart = parseInt(a.part) || 999;
+                                const bPart = parseInt(b.part) || 999;
+                                return aPart - bPart;
+                            });
 
-                                    return (
-                                        <button
-                                            key={coupon.id}
-                                            onClick={() => handleSelectCoupon(coupon)}
-                                            disabled={loading}
-                                            className={`relative group border p-2.5 rounded-2xl flex flex-col items-center justify-center min-w-[70px] h-20 transition-all shadow-xl disabled:opacity-50
-                                                ${isSelected
-                                                    ? isMeatBundle
-                                                        ? 'bg-red-600 border-red-400 scale-105 ring-4 ring-red-500/20'
-                                                        : 'bg-purple-600 border-purple-400 scale-105 ring-4 ring-purple-500/20'
-                                                    : isMeatBundle
-                                                        ? 'bg-gradient-to-br from-red-900 to-red-950 border-red-800 hover:border-red-500 hover:scale-[1.05] active:scale-95'
-                                                        : 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 hover:border-purple-500 hover:scale-[1.05] active:scale-95'
-                                                }
-                                            `}
-                                        >
-                                            {/* Part Badge - For split bundles */}
-                                            {partLabel && (
-                                                <div className={`absolute -top-1.5 -right-1.5 text-[8px] font-black px-1.5 py-0.5 rounded-full z-10 
-                                                    ${isSelected
-                                                        ? isMeatBundle ? 'bg-white text-red-600' : 'bg-white text-purple-600'
-                                                        : isMeatBundle
-                                                            ? 'bg-gradient-to-br from-red-500 to-red-600 text-white border border-red-900'
-                                                            : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white border border-slate-900'}`}>
-                                                    {partLabel}
-                                                </div>
-                                            )}
-
-                                            {reward.type === 'PERCENTAGE' && (
-                                                <span className={`text-xl font-black mb-0 transition-colors ${isSelected ? 'text-white' : isMeatBundle ? 'text-red-300 group-hover:text-red-200' : 'text-white group-hover:text-purple-400'}`}>
-                                                    {displayDiscount}%
-                                                </span>
-                                            )}
-                                            <span className={`text-[9px] font-bold uppercase tracking-tighter text-center line-clamp-1 leading-none transition-colors mt-0.5
-                                                ${isSelected
-                                                    ? isMeatBundle ? 'text-red-200' : 'text-purple-200'
-                                                    : isMeatBundle ? 'text-red-400/70 group-hover:text-red-300' : 'text-slate-400 dark:text-slate-500 group-hover:text-purple-400/70'}
-                                            `}>
-                                                {coupon.campaigns?.name}
+                            return (
+                                <div key={type} className="animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="flex items-center justify-between mb-4 px-1">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2 h-6 rounded-full ${type.includes('meat') ? 'bg-red-500' : 'bg-purple-500'}`} />
+                                            <span className="text-sm font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                                                {sortedItems[0]?.campaigns?.name || type}
                                             </span>
+                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{sortedItems.length}</span>
+                                        </div>
+                                        <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700/50 mx-4" />
+                                    </div>
 
-                                            {!isSelected && <div className={`absolute inset-0 ${isMeatBundle ? 'bg-red-500/5' : 'bg-purple-500/5'} opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl`} />}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                                    <div className="flex gap-4 overflow-x-auto pb-4 pt-1 px-1 custom-scrollbar-x snap-x no-scrollbar">
+                                        {sortedItems.map(coupon => {
+                                            const reward = coupon.campaigns?.reward_config || {};
+                                            const isSelected = selectedCouponGroup?.id === coupon.id;
+                                            const displayDiscount = coupon.individualDiscount !== null ? coupon.individualDiscount : reward.value;
+                                            const partLabel = coupon.part ? `${coupon.part}/4` : '';
+                                            const campaignName = (coupon.campaigns?.name || '').toLowerCase();
+                                            const bundleType = coupon.metadata?.bundle_type || '';
+                                            const isMeatBundle = bundleType.includes('meat') || campaignName.includes('لحم');
+
+                                            return (
+                                                <button
+                                                    key={coupon.id}
+                                                    onClick={() => handleSelectCoupon(coupon)}
+                                                    disabled={loading}
+                                                    className={`relative group border p-2.5 rounded-2xl flex flex-col items-center justify-center min-w-[70px] h-20 transition-all shadow-xl disabled:opacity-50
+                                                    ${isSelected
+                                                            ? isMeatBundle
+                                                                ? 'bg-red-600 border-red-400 scale-105 ring-4 ring-red-500/20'
+                                                                : 'bg-purple-600 border-purple-400 scale-105 ring-4 ring-purple-500/20'
+                                                            : isMeatBundle
+                                                                ? 'bg-gradient-to-br from-red-900 to-red-950 border-red-800 hover:border-red-500 hover:scale-[1.05] active:scale-95'
+                                                                : 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 hover:border-purple-500 hover:scale-[1.05] active:scale-95'
+                                                        }
+                                                `}
+                                                >
+                                                    {/* Part Badge - For split bundles */}
+                                                    {partLabel && (
+                                                        <div className={`absolute -top-1.5 -right-1.5 text-[8px] font-black px-1.5 py-0.5 rounded-full z-10 
+                                                        ${isSelected
+                                                                ? isMeatBundle ? 'bg-white text-red-600' : 'bg-white text-purple-600'
+                                                                : isMeatBundle
+                                                                    ? 'bg-gradient-to-br from-red-500 to-red-600 text-white border border-red-900'
+                                                                    : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white border border-slate-900'}`}>
+                                                            {partLabel}
+                                                        </div>
+                                                    )}
+
+                                                    {reward.type === 'PERCENTAGE' && (
+                                                        <span className={`text-xl font-black mb-0 transition-colors ${isSelected ? 'text-white' : isMeatBundle ? 'text-red-300 group-hover:text-red-200' : 'text-white group-hover:text-purple-400'}`}>
+                                                            {displayDiscount}%
+                                                        </span>
+                                                    )}
+                                                    <span className={`text-[9px] font-bold uppercase tracking-tighter text-center line-clamp-1 leading-none transition-colors mt-0.5
+                                                    ${isSelected
+                                                            ? isMeatBundle ? 'text-red-200' : 'text-purple-200'
+                                                            : isMeatBundle ? 'text-red-400/70 group-hover:text-red-300' : 'text-slate-400 dark:text-slate-500 group-hover:text-purple-400/70'}
+                                                `}>
+                                                        {coupon.campaigns?.name}
+                                                    </span>
+
+                                                    {!isSelected && <div className={`absolute inset-0 ${isMeatBundle ? 'bg-red-500/5' : 'bg-purple-500/5'} opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl`} />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
