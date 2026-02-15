@@ -342,20 +342,20 @@ export default function CampaignsPage() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-gray-900 rounded-[2rem] w-full max-w-lg shadow-2xl p-8 animate-in zoom-in-95 duration-200" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-                        <div className="flex justify-between items-center mb-6">
+                    <div className="bg-white dark:bg-gray-900 rounded-[2rem] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl p-5 animate-in zoom-in-95 duration-200" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+                        <div className="flex justify-between items-center mb-3">
                             <h2 className="text-2xl font-black text-gray-900 dark:text-white">
                                 {editingId ? t('edit_campaign') : t('new_campaign')}
                             </h2>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-900">{t('cancel')}</button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-3">
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5 text-start">{t('campaign_name')}</label>
                                 <input
                                     required
-                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start"
                                     placeholder={t('campaign_name_placeholder')}
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -386,7 +386,7 @@ export default function CampaignsPage() {
                                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5 text-start">{t('campaign_description')}</label>
                                 <textarea
                                     rows={2}
-                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start resize-none"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start resize-none"
                                     placeholder={t('campaign_description_placeholder')}
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -397,7 +397,7 @@ export default function CampaignsPage() {
                                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5">{t('validity_days')}</label>
                                 <input
                                     type="number"
-                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white outline-none"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 font-bold text-gray-900 dark:text-white outline-none"
                                     value={formData.validity_days}
                                     onChange={e => setFormData({ ...formData, validity_days: e.target.value })}
                                 />
@@ -431,58 +431,44 @@ export default function CampaignsPage() {
 
                             {/* CUSTOM SPLITS CONFIG */}
                             {formData.type === 'BUNDLE' && (
-                                <div className="text-start">
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5">{t('custom_splits') || 'توزيع الحصص (مفصولة بفاصلة)'}</label>
-                                    <input
-                                        className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g. 6, 6"
-                                        value={formData.custom_splits}
-                                        onChange={e => setFormData({ ...formData, custom_splits: e.target.value })}
-                                    />
-                                    <p className="text-[10px] text-gray-500 mt-1">
-                                        {language === 'ar'
-                                            ? 'مثال: 6, 6 (سيقوم بإنشاء طابعين بقيمة 6% لكل منهما قبل البونص)'
-                                            : 'Example: 6, 6 (will create two 6% stamps before the bonus)'}
-                                    </p>
+                                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-xl border border-green-100 dark:border-green-800 text-start">
+                                    <div className="flex items-center gap-2 mb-2 text-green-600 dark:text-green-400">
+                                        <Gift size={16} />
+                                        <span className="text-xs font-black uppercase tracking-widest">{t('reward_config')} ({t('per_unit') || 'لكل باقة'})</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 mb-1.5">{t('custom_splits') || 'توزيع الحصص المخصص'}</label>
+                                            <input
+                                                className="w-full bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                                                placeholder="e.g. 6, 6"
+                                                value={formData.custom_splits}
+                                                onChange={e => setFormData({ ...formData, custom_splits: e.target.value })}
+                                            />
+                                            <p className="text-[10px] text-gray-500 mt-1">
+                                                {language === 'ar'
+                                                    ? 'مثال: 6, 6 (سيقوم بإنشاء طابعين بقيمة 6% لكل منهما قبل البونص)'
+                                                    : 'Example: 6, 6 (will create two 6% stamps before the bonus)'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 mb-1.5">{t('reward_value')} (%)</label>
+                                            <input
+                                                type="number"
+                                                required
+                                                className="w-full bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                                                placeholder="12"
+                                                value={formData.reward_value}
+                                                onChange={e => setFormData({ ...formData, reward_value: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
-
-                            {/* REWARD VALUE (What does each unit give?) */}
-                            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-800 text-start">
-                                <div className="flex items-center gap-2 mb-2 text-green-600 dark:text-green-400">
-                                    <Gift size={16} />
-                                    <span className="text-xs font-black uppercase tracking-widest">{t('reward_config')} ({t('per_unit') || 'Per Coupon'})</span>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-1">
-                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 mb-1.5">{t('reward_type')}</label>
-                                        <select
-                                            className="w-full bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white outline-none"
-                                            value={formData.reward_type}
-                                            onChange={e => setFormData({ ...formData, reward_type: e.target.value })}
-                                        >
-                                            <option value="PERCENTAGE">{t('reward_percent')}</option>
-                                            <option value="FIXED">{t('reward_fixed')}</option>
-                                        </select>
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 mb-1.5">{t('reward_value')}</label>
-                                        <input
-                                            type="number"
-                                            required
-                                            className="w-full bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 font-bold text-gray-900 dark:text-white outline-none"
-                                            placeholder="100"
-                                            value={formData.reward_value}
-                                            onChange={e => setFormData({ ...formData, reward_value: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-100 uppercase tracking-widest"
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-100 uppercase tracking-widest"
                             >
                                 {editingId ? t('save_changes') : t('launch_campaign')}
                             </button>
