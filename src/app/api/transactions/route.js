@@ -352,6 +352,23 @@ export async function POST(request) {
                     .single();
 
                 if (targetCampaign && targetCampaign.type === 'BUNDLE') {
+                    // ✅ OWNERSHIP CHECK: Prevent duplicate active bundles
+                    const { data: existingBundle } = await supabaseAdmin
+                        .from('customer_coupons')
+                        .select('id')
+                        .eq('customer_id', customer_id)
+                        .eq('campaign_id', campaign_id)
+                        .eq('status', 'ACTIVE')
+                        .limit(1)
+                        .maybeSingle();
+
+                    if (existingBundle) {
+                        return NextResponse.json({
+                            message: 'العميل يمتلك هذه الباقة بالفعل وهي لا تزال نشطة. لا يمكن تفعيلها مرتين في نفس الوقت.',
+                            code: 'ALREADY_OWNED'
+                        }, { status: 400 });
+                    }
+
                     // Logic: Split bundle discount based on bundle_type or campaign name
                     const totalDiscount = targetCampaign.reward_config?.value || 10;
                     const bundleType = targetCampaign.bundle_type || '';
@@ -364,17 +381,15 @@ export async function POST(request) {
                             return { splits: [3, 5, 7, 10], bonusBundle: total, label: 'عائلة' };
                         }
                         if (type === 'meat_family') {
-                            return { splits: [2, 2, 3, 3], bonusBundle: total, label: 'لحمة عائلة' };
+                            return { splits: [2, 2, 4, 4], bonusBundle: total, label: 'لحمة عائلة' };
                         }
                         if (type === 'youth') {
-                            return { splits: [2, 4, 3, 3], bonusBundle: total, label: 'شباب' };
+                            return { splits: [ 6, 6], bonusBundle: total, label: 'أفراد' };
                         }
                         if (type === 'meat_individual') {
                             return { splits: [2.5, 2.5], bonusBundle: total, label: 'لحمة أفراد' };
                         }
-                        if (type === 'individual') {
-                            return { splits: [2, 2, 3, 3], bonusBundle: total, label: 'أفراد' };
-                        }
+
 
                         // Fallback: analyze campaign name for backward compatibility
                         if (name.includes('عائل') && !name.includes('لحم')) {

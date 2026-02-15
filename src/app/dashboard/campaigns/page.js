@@ -402,11 +402,10 @@ export default function CampaignsPage() {
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                     {[
                                         { value: '', label: 'افتراضي', labelEn: 'Default' },
-                                        { value: 'family', label: 'عائلة (3%+5%+7%+10%+25%)', labelEn: 'Family' },
-                                        { value: 'meat_family', label: 'لحمة عائلة (2%+2%+3%+3%+10%)', labelEn: 'Meat Family' },
-                                        { value: 'youth', label: 'شباب (2%+4%+3%+3%+12%)', labelEn: 'Youth' },
-                                        { value: 'meat_individual', label: 'لحمة أفراد (2.5%+2.5%+5%)', labelEn: 'Meat Indiv.' },
-                                        { value: 'individual', label: 'أفراد (2%+2%+3%+3%+10%)', labelEn: 'Individual' }
+                                        { value: 'family', label: 'عائلة', labelEn: 'Family' },
+                                        { value: 'meat_family', label: 'لحمة عائلة', labelEn: 'Meat Family' },
+                                        { value: 'youth', label: 'أفراد', labelEn: 'Youth' },
+                                        { value: 'meat_individual', label: 'لحمة أفراد', labelEn: 'Meat Indiv.' },
                                     ].map(opt => (
                                         <button
                                             key={opt.value}

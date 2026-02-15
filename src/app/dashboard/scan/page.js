@@ -1457,36 +1457,52 @@ function CheckoutForm({ customer, card, rewards, coupons, manualCampaigns, campa
                         </div>
 
                         {availableBundles && availableBundles.length > 0 ? (
-                            availableBundles.map(bundle => (
-                                <button
-                                    key={bundle.id}
-                                    disabled={loading}
-                                    onClick={() => handleBuyPackage(bundle)}
-                                    className="group relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 hover:border-blue-500 p-4 rounded-2xl text-start transition-all hover:scale-[1.02] shadow-xl h-full flex flex-col justify-between"
-                                >
-                                    <div className="absolute top-2 right-2 bg-blue-500/10 text-blue-400 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                        1 {t('credit_unit')}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-base font-bold text-white group-hover:text-blue-400 mb-1 line-clamp-1">{bundle.name}</h3>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-xl font-black text-white">{currency}{bundle.price}</span>
-                                            <span className="text-[10px] text-slate-500 line-through">{currency}{(bundle.price * 1.2).toFixed(0)}</span>
+                            availableBundles.map(bundle => {
+                                const isOwned = coupons?.some(c =>
+                                    c.campaign_id === bundle.id &&
+                                    (c.status === 'ACTIVE' || c.status === 'active')
+                                );
+
+                                return (
+                                    <button
+                                        key={bundle.id}
+                                        disabled={loading || isOwned}
+                                        onClick={() => !isOwned && handleBuyPackage(bundle)}
+                                        className={`group relative bg-gradient-to-br from-slate-800 to-slate-900 border ${isOwned ? 'border-emerald-500/50 opacity-80' : 'border-slate-700 hover:border-blue-500'} p-4 rounded-2xl text-start transition-all hover:scale-[1.02] shadow-xl h-full flex flex-col justify-between`}
+                                    >
+                                        <div className={`absolute top-2 right-2 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 ${isOwned ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                            {isOwned ? (
+                                                <>
+                                                    <CheckCircle2 size={10} />
+                                                    {t('owned') || 'Owned'}
+                                                </>
+                                            ) : (
+                                                <>1 {t('credit_unit')}</>
+                                            )}
                                         </div>
-                                    </div>
-                                    <div className="mt-3 flex flex-col gap-1.5">
-                                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                                            <CheckCircle2 size={10} className="text-emerald-500" />
-                                            <span>{bundle.validity_days} {t('days_label')}</span>
-                                        </div>
-                                        {bundle.reward_config?.type === 'PERCENTAGE' && (
-                                            <div className="bg-amber-500/10 text-amber-500 text-[9px] font-black px-2 py-0.5 rounded-lg border border-amber-500/20 w-fit">
-                                                +{bundle.reward_config.value}% (4 كوبونات)
+                                        <div>
+                                            <h3 className={`text-base font-bold mb-1 line-clamp-1 ${isOwned ? 'text-slate-400' : 'text-white group-hover:text-blue-400'}`}>
+                                                {bundle.name}
+                                            </h3>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className={`text-xl font-black ${isOwned ? 'text-slate-400' : 'text-white'}`}>{currency}{bundle.price}</span>
+                                                <span className="text-[10px] text-slate-500 line-through">{currency}{(bundle.price * 1.2).toFixed(0)}</span>
                                             </div>
-                                        )}
-                                    </div>
-                                </button>
-                            ))
+                                        </div>
+                                        <div className="mt-3 flex flex-col gap-1.5">
+                                            <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                                                <CheckCircle2 size={10} className={isOwned ? 'text-slate-500' : 'text-emerald-500'} />
+                                                <span>{bundle.validity_days} {t('days_label')}</span>
+                                            </div>
+                                            {bundle.reward_config?.type === 'PERCENTAGE' && (
+                                                <div className={`bg-amber-500/10 text-amber-500 text-[9px] font-black px-2 py-0.5 rounded-lg border border-amber-500/20 w-fit`}>
+                                                    +{bundle.reward_config.value}% ({bundle.bundle_type === 'individual' || bundle.bundle_type === 'meat_individual' ? '4 كوبونات' : 'عائلة'})
+                                                </div>
+                                            )}
+                                        </div>
+                                    </button>
+                                );
+                            })
                         ) : (
                             <div className="col-span-full flex flex-col items-center justify-center py-12 text-slate-500">
                                 <Store size={48} className="mb-4 opacity-50" />
