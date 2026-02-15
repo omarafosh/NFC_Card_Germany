@@ -22,35 +22,7 @@ export default function EnrollCardPage() {
     const [programStatus, setProgramStatus] = useState('idle'); // idle, waiting, writing, success, error
     const [terminalId, setTerminalId] = useState(null);
 
-    // Initial load of customers
-    useEffect(() => {
-        const storedTerminal = localStorage.getItem('selected_terminal');
-        if (storedTerminal) setTerminalId(storedTerminal);
-
-        // Check for Quick Program params
-        // Use a slight delay to ensure customers are loaded if we want to validte customer existence, 
-        // but for now we just trust the ID if provided or fetch details later.
-
-        const uidParam = searchParams.get('uid');
-        const customerIdParam = searchParams.get('customer_id');
-
-        if (uidParam) {
-            setScannedUid(uidParam);
-            // If we have customer ID, try to find in list after fetching, or just set partial object
-            if (customerIdParam && customerIdParam !== 'undefined' && customerIdParam !== 'null') {
-                // We'll fetch this customer specifically or wait for list
-                fetchCustomerById(customerIdParam).then(c => {
-                    if (c) setSelectedCustomer(c);
-                    setStep(3); // Go straight to program
-                });
-            } else {
-                setStep(3); // Go straight to program (card only)
-            }
-        } else {
-            fetchCustomers();
-        }
-    }, [searchParams]);
-
+    // Define functions BEFORE they are used to avoid TDZ issues
     const fetchCustomerById = async (id) => {
         const { data } = await supabase.from('customers').select('id, full_name, phone').eq('id', id).single();
         return data;
@@ -80,6 +52,32 @@ export default function EnrollCardPage() {
             setLoadingCustomers(false);
         }
     };
+
+    // Initial load of customers - AFTER function definitions
+    useEffect(() => {
+        const storedTerminal = localStorage.getItem('selected_terminal');
+        if (storedTerminal) setTerminalId(storedTerminal);
+
+        // Check for Quick Program params
+        const uidParam = searchParams.get('uid');
+        const customerIdParam = searchParams.get('customer_id');
+
+        if (uidParam) {
+            setScannedUid(uidParam);
+            // If we have customer ID, try to find in list after fetching, or just set partial object
+            if (customerIdParam && customerIdParam !== 'undefined' && customerIdParam !== 'null') {
+                // We'll fetch this customer specifically or wait for list
+                fetchCustomerById(customerIdParam).then(c => {
+                    if (c) setSelectedCustomer(c);
+                    setStep(3); // Go straight to program
+                });
+            } else {
+                setStep(3); // Go straight to program (card only)
+            }
+        } else {
+            fetchCustomers();
+        }
+    }, [searchParams]);
 
     const handleSearch = (e) => {
         const val = e.target.value;
