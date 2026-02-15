@@ -6,7 +6,6 @@ import { CreditCard, Loader2, User, CheckCircle2, XCircle, Settings, Save, Delet
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useNFC } from '@/lib/NFCContext';
-import { NfcReader } from '@/lib/hardware/NfcReader';
 
 export default function ScanPage() {
     const { t, dir, language } = useLanguage();
@@ -611,6 +610,8 @@ export default function ScanPage() {
         }
 
         if (!nfcReaderRef.current) {
+            // Dynamically import NfcReader to avoid SSR issues
+            const { NfcReader } = await import('@/lib/hardware/NfcReader');
             nfcReaderRef.current = new NfcReader();
             nfcReaderRef.current.onScan = (uid) => {
                 console.log(`[Hardware] Direct Scan: ${uid}`);
