@@ -927,16 +927,16 @@ export default function ScanPage() {
                                                 </div>
 
                                                 {/* نوع العميل والخصم */}
-                                                <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border-2 shadow-sm ${scanResult.customerType === 'family'
-                                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30'
-                                                    : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30'
+                                                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-xl border-2 shadow-lg ring-4 ring-offset-1 ${scanResult.customerType === 'family'
+                                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30 ring-purple-500/5'
+                                                    : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 ring-cyan-500/5'
                                                     }`}>
-                                                    <User size={12} />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider">
-                                                        {scanResult.customerType === 'family' ? (t('customer_family') || 'عائلة') : (t('customer_single') || 'عازب')}
+                                                    <User size={16} className="opacity-70" />
+                                                    <span className="text-lg font-black uppercase tracking-wider">
+                                                        {scanResult.customerType === 'family' ? t('customer_family') : t('customer_single')}
                                                     </span>
-                                                    <span className="text-[10px] font-bold opacity-70">
-                                                        ({scanResult.customer.effectiveDiscount}% {t('discount') || 'خصم'})
+                                                    <span className="text-sm font-bold opacity-70 border-l border-current pl-2 ml-1">
+                                                        {scanResult.customer.effectiveDiscount}% {t('discount') || 'خصم'}
                                                     </span>
                                                 </div>
 

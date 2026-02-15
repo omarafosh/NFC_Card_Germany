@@ -166,6 +166,8 @@ export const translations = {
         type_family: 'عائلات (خصم 20%)',
         type_single_short: 'أفراد',
         type_family_short: 'عائلات',
+        customer_single: 'عضو فردي',
+        customer_family: 'عضو عائلة',
         target_audience: 'الفئة المستهدفة',
         all_customers: 'جميع العملاء',
 
@@ -217,6 +219,8 @@ export const translations = {
         bundle_type_meat_individual: 'باقات اللحوم الفردية',
         bundle_type_individual: 'باقات الأفراد',
         bundle_type_default: 'باقات متنوعة',
+        bundle_type: 'نوع الباقة',
+        custom_splits: 'توزيع الحصص المخصص',
 
         // Cards Page
         link_card: 'توصيل بطاقة جديدة',
@@ -531,6 +535,8 @@ export const translations = {
         type_family: 'Families (20% Off)',
         type_single_short: 'Individuals',
         type_family_short: 'Families',
+        customer_single: 'Single Member',
+        customer_family: 'Family Member',
         target_audience: 'Target Audience',
         all_customers: 'All Customers',
 
@@ -582,6 +588,8 @@ export const translations = {
         bundle_type_meat_individual: 'Meat Individual Bundles',
         bundle_type_individual: 'Individual Bundles',
         bundle_type_default: 'Other Bundles',
+        bundle_type: 'Bundle Type',
+        custom_splits: 'Custom Splits',
 
         // Cards Page
         link_card: 'Link New Card',

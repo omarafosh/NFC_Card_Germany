@@ -385,7 +385,8 @@ export default function CampaignsPage() {
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-widest mb-1.5 text-start">{t('campaign_description')}</label>
                                 <textarea
-                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start min-h-[100px] resize-none"
+                                    rows={2}
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-start resize-none"
                                     placeholder={t('campaign_description_placeholder')}
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
