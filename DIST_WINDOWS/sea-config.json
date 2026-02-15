@@ -1,5 +1,0 @@
-{
-    "main": "dist-final/index.js",
-    "output": "sea-prep.blob",
-    "disableSentinel": false
-}
