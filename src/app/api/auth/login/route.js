@@ -90,22 +90,6 @@ export async function POST(request) {
             .eq('ip_address', ip)
             .eq('username', username);
 
-        // CHECK 2FA
-        if (user.two_factor_enabled) {
-            // Generate temporary token for 2FA verification (valid for 5 mins)
-            const tempToken = jwt.sign(
-                { id: user.id, scope: '2fa_login' },
-                process.env.JWT_SECRET,
-                { expiresIn: '5m' }
-            );
-
-            authLogger.info('2FA challenge required', { username });
-            return NextResponse.json({
-                twoFactorRequired: true,
-                tempToken: tempToken
-            });
-        }
-
         const token = signToken({ id: user.id, username: user.username, role: user.role });
 
         const cookieStore = await cookies();
