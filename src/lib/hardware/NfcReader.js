@@ -1,25 +1,33 @@
-
 /**
  * Professional NFC Driver for ACR122U (WebHID)
  * v4.0 - Feature Report Strategy
  */
+
+// SSR Guard - ensure this only runs in browser
+const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
+
 export class NfcReader {
     constructor() {
         this.device = null;
         this.type = null;
         this.onScan = null;
-        this.onCardRemoved = null; // New callback
+        this.onCardRemoved = null;
         this.onStatusChange = null;
         this.pollingInterval = null;
         this._isProcessing = false;
     }
 
     async isSupported() {
-        return ('hid' in navigator);
+        return isBrowser && ('hid' in navigator);
     }
 
     async connect() {
         console.log("NFC Reader Driver v4.0: Feature Report Mode");
+
+        if (!isBrowser) {
+            console.log('NFC Reader: Not in browser, skipping connection');
+            return false;
+        }
 
         try {
             if ('hid' in navigator) {
